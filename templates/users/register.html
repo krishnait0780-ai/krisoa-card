@@ -1,0 +1,106 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Account{% endblock %}
+
+
+{% block content %}
+<div class="register-wrapper">
+
+    <div class="register-banner">
+        <div class="banner-content">
+            <h1>Create Your Account</h1>
+            <p>Join our platform and get started today.</p>
+
+            <div class="banner-illustration">
+                <div class="illustration-circle">✓</div>
+                <div class="illustration-card">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+
+            <div class="feature">
+                <span class="feature-icon">⚡</span>
+                <div>
+                    <h3>Easy Registration</h3>
+                    <p>Create your account in minutes.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <span class="feature-icon">◈</span>
+                <div>
+                    <h3>Secure &amp; Private</h3>
+                    <p>Your data is protected.</p>
+                </div>
+            </div>
+
+            <div class="feature">
+                <span class="feature-icon">▣</span>
+                <div>
+                    <h3>Access Anywhere</h3>
+                    <p>Log in from any device.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="register-panel">
+        <div class="form-header">
+            <h2>Create an Account</h2>
+            <p>Fill in the details below to get started.</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <div class="help-text">
+                            {{ field.help_text|safe }}
+                        </div>
+                    {% endif %}
+
+                    {% for error in field.errors %}
+                        <div class="field-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            {% for error in form.non_field_errors %}
+                <div class="field-error">{{ error }}</div>
+            {% endfor %}
+
+            <button type="submit" class="register-button">
+                Create Account
+            </button>
+        </form>
+
+        <div class="divider">
+            <span>OR</span>
+        </div>
+
+        <p class="login-link">
+            Already have an account?
+            <a href="{% url 'users-login' %}">Login here</a>
+        </p>
+    </div>
+
+</div>
+{% endblock %}
