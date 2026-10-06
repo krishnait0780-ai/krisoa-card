@@ -5,24 +5,25 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install system dependencies for PostgreSQL
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    libpq-dev \
+# Install PostgreSQL client library dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       gcc \
+       libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Pipenv
-RUN pip install --no-cache-dir pipenv
+# Install Python dependencies
+COPY requirements.txt .
+RUN python -m pip install --no-cache-dir --upgrade pip \
+    && python -m pip install --no-cache-dir -r requirements.txt
 
-# Copy dependency files first for better build caching
-COPY Pipfile Pipfile.lock ./
-
-# Install project dependencies into the container environment
-RUN pipenv install --system --deploy
-
-# Copy the Django project
+# Copy Django application
 COPY . .
+
+# Collect static files during image build
+RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Run Django using Gunicorn
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
