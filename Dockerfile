@@ -21,7 +21,7 @@ RUN python -m pip install --no-cache-dir --upgrade pip \
 COPY . .
 
 # Collect static files during image build
-RUN python manage.py collectstatic --noinput
+#RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
