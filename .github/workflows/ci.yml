@@ -70,7 +70,7 @@ jobs:
         run: python manage.py migrate --noinput
 
       # 6. Run Django tests
-      - name: Run tests
+      - name: Run Django tests
         run: python manage.py test
 
       # 7. Build Docker image
