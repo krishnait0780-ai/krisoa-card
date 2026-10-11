@@ -123,7 +123,7 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           PARAMETERS=$(jq -n \
-            --arg command "sudo /usr/local/bin/krisoa-deploy.sh ${IMAGE_TAG}" \
+            --arg command "sudo /bin/bash /usr/local/bin/krisoa-deploy.sh ${IMAGE_TAG}" \
             '{commands: [$command]}')
 
           COMMAND_ID=$(aws ssm send-command \
