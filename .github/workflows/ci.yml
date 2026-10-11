@@ -1,5 +1,4 @@
 name: Django CI
-
 on:
   push:
     branches: [main]
@@ -83,6 +82,7 @@ jobs:
 
       # 8. Configure AWS credentials using OIDC
       - name: Configure AWS credentials
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::186219257948:role/GitHubActions-ECR-Role
@@ -90,19 +90,19 @@ jobs:
 
       # 9. Login to Amazon ECR
       - name: Login to Amazon ECR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       # 10. Tag and push Docker image to ECR
       - name: Push Docker image to ECR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker tag krisoa-card:ci $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-  
-  #=========Deploy to EC2 via SSM=========
   deploy:
     name: Deploy to EC2 via SSM
     needs: test-and-build
@@ -163,7 +163,7 @@ jobs:
                   --region ap-south-1 \
                   --command-id "$COMMAND_ID" \
                   --instance-id "$INSTANCE_ID" \
-                  --query '{Status:Status,Error:StandardErrorContent,Output:StandardOutputContent}' \
+                  --query 'Status' \
                   --output json || true
                 exit 1
                 ;;
@@ -174,4 +174,3 @@ jobs:
 
           echo "Timed out waiting for deployment result."
           exit 1
-	  
