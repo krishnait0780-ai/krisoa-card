@@ -14,7 +14,11 @@ permissions:
 env:
   AWS_REGION: ap-south-1
   ECR_REPOSITORY: krishna/krisoa-card
-
+  
+concurrency:
+  group: krisoa-card-production
+  cancel-in-progress: false
+  
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
@@ -97,8 +101,7 @@ jobs:
         run: |
           docker tag krisoa-card:ci $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-		  
-		  
+  
   #=========Deploy to EC2 via SSM=========
   deploy:
     name: Deploy to EC2 via SSM
